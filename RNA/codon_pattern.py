@@ -1,12 +1,14 @@
 import re
-from RNA.nucleotide import Nucleotide
+from RNA.nucleotide import Nucleotide, to_anti_codon
 
-class Codon:
+class CodonPattern:
     matches: set[tuple[Nucleotide, Nucleotide, Nucleotide]]
     pattern: re.Pattern
     pattern_string: str
+    name: str
 
-    def __init__(self, *matches: list[tuple[Nucleotide, Nucleotide, Nucleotide]]):
+    def __init__(self, name, *matches: list[tuple[Nucleotide, Nucleotide, Nucleotide]]):
+        self.name = name
         self.matches = set(matches)
         self.pattern_string = '|'.join([
             ''.join([
@@ -26,3 +28,9 @@ class Codon:
             return bool(self.pattern.match(codon))
         
         return codon in self.matches
+    
+    def anti_codon(self) -> CodonPattern:
+        return (f'Anti({self.name})', *[
+                to_anti_codon(match)
+                for match in self.matches
+            ])
