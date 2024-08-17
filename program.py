@@ -1,6 +1,7 @@
 from RNA.codon_reader import CodonReader
+from RNA.amino_acid_codons import ALL_ACIDS
 
-reader = CodonReader()
+reader = CodonReader(ALL_ACIDS)
 
 def swap_chars(string, a, b):
     return string.replace(a, '|').replace(b, a).replace('|', b)

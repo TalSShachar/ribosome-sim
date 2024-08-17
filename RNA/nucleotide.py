@@ -21,5 +21,6 @@ def to_anti_codon(codon: tuple[Nucleotide, Nucleotide, Nucleotide]):
             to_anti_nucleotide(codon[1]),
             to_anti_nucleotide(codon[2]))
 
-
 ALL = Nucleotide.A | Nucleotide.G | Nucleotide.U | Nucleotide.C
+
+NucleotideTriplet = tuple[Nucleotide, Nucleotide, Nucleotide]

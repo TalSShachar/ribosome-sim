@@ -6,7 +6,6 @@ PHE = CodonPattern('Phe', (Nucleotide.U, Nucleotide.U, Nucleotide.U | Nucleotide
 LEU = CodonPattern('Leu', (Nucleotide.U, Nucleotide.U, Nucleotide.A | Nucleotide.G),
             (Nucleotide.C, Nucleotide.U, ALL_NUCLEOTIDES))
 LLE = CodonPattern('Lle', (Nucleotide.A, Nucleotide.U, Nucleotide.U | Nucleotide.C | Nucleotide.A))
-MET = CodonPattern('MET', (Nucleotide.A, Nucleotide.U, Nucleotide.G))
 VAL = CodonPattern('VAL', (Nucleotide.G, Nucleotide.U, ALL_NUCLEOTIDES))
 SER = CodonPattern('Ser', (Nucleotide.U, Nucleotide.C, ALL_NUCLEOTIDES),
             (Nucleotide.A, Nucleotide.G, Nucleotide.U | Nucleotide.C))
@@ -28,7 +27,7 @@ ARG = CodonPattern('Arg', (Nucleotide.C, Nucleotide.G, ALL_NUCLEOTIDES),
 GLY = CodonPattern('Gly', (Nucleotide.G, Nucleotide.G, ALL_NUCLEOTIDES))
 
 ALL_ACIDS = [
-    BEGIN_CODON, STOP_CODON, PHE, LEU, LLE, MET,
+    BEGIN_CODON, STOP_CODON, PHE, LEU, LLE,
     VAL, SER, PRO, THR, ALA, TYR, HIS, GLN, ASN,
     LYS, ASP, GLU, CYS, TRP
 ]

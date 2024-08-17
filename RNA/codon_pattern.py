@@ -1,34 +1,30 @@
 import re
-from RNA.nucleotide import Nucleotide, to_anti_codon
+from typing import Iterable
+from RNA.nucleotide import to_anti_codon, NucleotideTriplet
 
 class CodonPattern:
-    matches: set[tuple[Nucleotide, Nucleotide, Nucleotide]]
-    pattern: re.Pattern
-    pattern_string: str
+    matches: set[NucleotideTriplet]
     name: str
 
-    def __init__(self, name, *matches: list[tuple[Nucleotide, Nucleotide, Nucleotide]]):
+    def __init__(self, name, *matches: list[NucleotideTriplet]):
         self.name = name
         self.matches = set(matches)
-        self.pattern_string = '|'.join([
-            ''.join([
-                n.name
-                    if len(n) == 1
-                    else '[' + ''.join([flag.name for flag in n]) + ']'
-                for n in match
-            ]) for match in matches
-        ])
-        self.pattern = re.compile(self.pattern_string)
 
     def __str__(self) -> str:
         return self.name
     
     def __repr__(self) -> str:
         return str(self)
-    
-    def ismatch(self, codon: str) -> bool:
-        return self.pattern.match(codon)
-    
+
+    def explicit_matches(self) -> Iterable[NucleotideTriplet]:
+        return (
+            (first, second, third) 
+                for match in self.matches
+                    for first in match[0]
+                    for second in match[1]
+                    for third in match[2]
+            )
+
     def anti_codon(self):
         return CodonPattern(f'Anti({self.name})', *[
                 to_anti_codon(match)
