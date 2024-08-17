@@ -21,16 +21,16 @@ class CodonPattern:
         self.pattern = re.compile(self.pattern_string)
 
     def __str__(self) -> str:
-        return self.pattern_string
+        return self.name
     
-    def ismatch(self, codon: str | tuple[Nucleotide, Nucleotide, Nucleotide]) -> bool:
-        if isinstance(codon, str):
-            return bool(self.pattern.match(codon))
-        
-        return codon in self.matches
+    def __repr__(self) -> str:
+        return str(self)
     
-    def anti_codon(self) -> CodonPattern:
-        return (f'Anti({self.name})', *[
+    def ismatch(self, codon: str) -> bool:
+        return self.pattern.match(codon)
+    
+    def anti_codon(self):
+        return CodonPattern(f'Anti({self.name})', *[
                 to_anti_codon(match)
                 for match in self.matches
             ])

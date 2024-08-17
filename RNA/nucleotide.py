@@ -1,6 +1,5 @@
 from enum import Flag, auto
 
-
 class Nucleotide(Flag):
     G = auto()
     C = auto()
@@ -15,7 +14,7 @@ ANTI = {
 }
 
 def to_anti_nucleotide(n: Nucleotide) -> Nucleotide:
-    return Nucleotide(sum([ANTI[flag] for flag in n]))
+    return Nucleotide(min(sum([ANTI[flag].value for flag in n]), ALL.value))
 
 def to_anti_codon(codon: tuple[Nucleotide, Nucleotide, Nucleotide]):
     return (to_anti_nucleotide(codon[0]),
