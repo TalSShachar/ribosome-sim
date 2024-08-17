@@ -1,6 +1,8 @@
 import re
 from typing import Iterable
-from RNA.nucleotide import to_anti_codon, NucleotideTriplet
+from RNA.nucleotide import NucleotideTriplet
+
+ANTI_CODON_PATTERN = re.compile(r'^Anti\((.*)\)$')
 
 class CodonPattern:
     matches: set[NucleotideTriplet]
@@ -20,13 +22,7 @@ class CodonPattern:
         return (
             (first, second, third) 
                 for match in self.matches
-                    for first in match[0]
-                    for second in match[1]
-                    for third in match[2]
+                    for first in match[0] # Possibilities for first nucleotide
+                    for second in match[1] # Possibilities for secon nucleotide
+                    for third in match[2] # Possibilities for third nucleotide
             )
-
-    def anti_codon(self):
-        return CodonPattern(f'Anti({self.name})', *[
-                to_anti_codon(match)
-                for match in self.matches
-            ])
