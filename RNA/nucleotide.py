@@ -14,7 +14,7 @@ ANTI = {
 }
 
 def to_anti_nucleotide(n: Nucleotide) -> Nucleotide:
-    return Nucleotide(min(sum([ANTI[flag].value for flag in n]), ALL.value))
+    return Nucleotide(sum([ANTI[flag].value for flag in n]))
 
 def to_anti_codon(codon: tuple[Nucleotide, Nucleotide, Nucleotide]):
     return (to_anti_nucleotide(codon[0]),
