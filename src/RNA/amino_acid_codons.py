@@ -31,5 +31,5 @@ GLY = CodonPattern('Gly', (Nucleotide.G, Nucleotide.G, ALL_NUCLEOTIDES))
 ALL_ACIDS = [
     BEGIN_CODON, STOP_CODON, PHE, LEU, LLE,
     VAL, SER, PRO, THR, ALA, TYR, HIS, GLN, ASN,
-    LYS, ASP, GLU, CYS, TRP
+    LYS, ASP, GLU, CYS, TRP, ARG
 ]

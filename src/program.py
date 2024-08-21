@@ -6,9 +6,7 @@ reader = CodonReader(ALL_ACIDS)
 def swap_chars(string: str, a: str, b: str):
     return string.replace(a, '|').replace(b, a).replace('|', b)
 
-string = swap_chars(swap_chars('AUGUUAUUGUCUUCCUGAUGGUGA', 'A', 'U'),
-                    'G', 'C')
-
+string = 'AUGAGAAGAUUAUUGUCUUCCUGAUGGUGA'
 print(string)
 
 acid_chain = reader.translate_string(string)
