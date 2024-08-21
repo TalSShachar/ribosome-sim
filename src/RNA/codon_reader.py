@@ -85,6 +85,7 @@ class CodonReader:
 
             # Termination codon, break translation
             if acid._name == STOP_CODON._name:
+                yield acid
                 break
 
             yield acid
