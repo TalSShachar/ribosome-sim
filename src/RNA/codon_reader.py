@@ -89,9 +89,6 @@ class CodonReader:
                 break
 
             yield acid
-        else:
-            # Will execute only in case the break statement didn't happen
-            raise ValueError('Invalid chain - reached end without stop codon')
 
 
     def translate_string(self, string: str):
