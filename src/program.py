@@ -14,4 +14,3 @@ print(string)
 acid_chain = reader.translate_string(string)
 
 print(list(acid_chain))
-
