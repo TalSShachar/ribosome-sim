@@ -1,8 +1,9 @@
 from typing import Iterable, Iterator
 from RNA.control_codons import STOP_CODON
 from RNA.codon_pattern import CodonPattern
-from RNA.nucleotide import Nucleotide, NucleotideTriplet, to_anti_codon
+from RNA.nucleotide import Nucleotide, NucleotideTriplet
 
+# Consants for calculating mapper array length
 CODON_SIZE = 3
 NUCLEOTIDE_TYPES = 4
 ALL_POSSIBLE_CODONS = NUCLEOTIDE_TYPES ** CODON_SIZE
@@ -16,22 +17,40 @@ NUCLEOTIDE_TO_INDEX = {
 }
 
 class CodonReader:
-    map: list[CodonPattern]
+    """
+    Responsible for the ribosomes mRNA parsing logic. Receives a map of recognized codons and
+    uses it to be able to parse an mRNA nucleotide codon chain.
+    """
+
+    _map: list[CodonPattern]
 
     def __init__(self, recognized_codons: Iterable[CodonPattern]):
-        self.map = [None] * ALL_POSSIBLE_CODONS
+        self._map = [None] * ALL_POSSIBLE_CODONS
 
         # Fill in map
         for codon in recognized_codons:
+            # Flatten out nucleotide patterns to concrete nucleotide types
             for explicit_match in codon.explicit_matches():
                 index = CodonReader._calculate_index(explicit_match)
 
-                assert self.map[index] is None, f'Index {index} for triplet {explicit_match} is already taken by codec {self.map[index].name}'
+                assert self._map[index] is None, \
+                    f'Index {index} for triplet {explicit_match} is already taken by codec {self._map[index]._name}'
 
-                self.map[index] = codon
+                self._map[index] = codon
 
     @staticmethod
     def _calculate_index(triplet: NucleotideTriplet):
+        """
+        Calculates a position in a mapping array of size 4^3 (nucleotide types ^ codon length)
+        for a given concrete nucleotide triplet
+        """
+
+        # Make sure the flag-count for each nucleotide is 1 (a single bit is active)
+        assert all((len(n) == 1 for n in triplet)),\
+            'Should be a triplet of concrete nucleotides'
+
+        # Expand tuple of size 3 to 3 variables,
+        # after mapping each nucleotide to its corresponding digit in base 4
         first, second, third = map(lambda n: NUCLEOTIDE_TO_INDEX[n], triplet)
 
         # Calculate in base 4 for 3 digits
@@ -40,21 +59,32 @@ class CodonReader:
                 (NUCLEOTIDE_TYPES * first) + second)
             ) + third
 
-    def translate(self, anti_codon: str) -> CodonPattern | None:
-        triplet = tuple([Nucleotide[n.name] for n in to_anti_codon(anti_codon)])
+    def translate(self, codon: str) -> CodonPattern | None:
+        """
+        Translates a codon string to a CodonPattern variable 
+        """
+        assert len(codon) == CODON_SIZE
 
-        assert len(triplet) == CODON_SIZE
+        # Map each nucleotide char in the codon to it's enum value 
+        triplet = tuple([Nucleotide[n.name] for n in codon])
 
-        return self.map[self._calculate_index(triplet)]
+        return self._map[self._calculate_index(triplet)]
     
     def translate_chain(self, chain: Iterator[NucleotideTriplet]) -> Iterator[CodonPattern]:
-        for anti_codon in chain:
-            acid = self.translate(anti_codon)
+        """
+        Takes in an Iterator of Nucleotide Triplets and,
+        as a generator, outputs concrete codon patterns with the matching
+        Amino acid name 
+        """
+        for codon in chain:
+            acid = self.translate(codon)
 
+            # If translating the codon failed
             if not acid:
-                raise ValueError(f'Invalid anti codon {anti_codon=}')
+                raise ValueError(f'Invalid codon {codon=}')
 
-            if acid.name == STOP_CODON.name:
+            # Termination codon, break translation
+            if acid._name == STOP_CODON._name:
                 break
 
             yield acid
@@ -62,10 +92,17 @@ class CodonReader:
             # Will execute only in case the break statement didn't happen
             raise ValueError('Invalid chain - reached end without stop codon')
 
+
     def translate_string(self, string: str):
+        """
+        Takes in an mRNA string, chunks it to 3-char chunks,
+        Parses them as nucleotide-char triplets, and translates those triplets
+        as a codon chain
+        """
         chunks = CodonReader._string_chunk(string.upper(), CODON_SIZE)
 
-        chain = (
+        # A generator pattern for producing Nucleotide triplets out of 3-char strings
+        chain: Iterable[NucleotideTriplet] = (
             (Nucleotide[chunk[0]], Nucleotide[chunk[1]], Nucleotide[chunk[2]])
             for chunk in chunks
         )
@@ -74,7 +111,11 @@ class CodonReader:
 
     @staticmethod
     def _string_chunk(string, length) -> Iterable[str]:
-        if len(string) % length == 0:
-            return (string[i:i + length] for i in range(0, len(string), length))
-
-        raise ValueError(f'Tried to chunk a string of length {len(string)} into {length} char chunks')
+        """
+        A utility method, takes in a string and the length of the desired chunks,
+        And generates chunks of that length
+        """
+        assert len(string) % length == 0, \
+            f'Tried to chunk a string of length {len(string)} into {length} char chunks'
+        
+        return (string[i:i + length] for i in range(0, len(string), length))

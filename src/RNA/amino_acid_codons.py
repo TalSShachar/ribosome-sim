@@ -2,6 +2,8 @@ from RNA.codon_pattern import CodonPattern
 from RNA.nucleotide import Nucleotide, ALL as ALL_NUCLEOTIDES
 from RNA.control_codons import *
 
+# A BUNCH of constants.
+
 PHE = CodonPattern('Phe', (Nucleotide.U, Nucleotide.U, Nucleotide.U | Nucleotide.C))
 LEU = CodonPattern('Leu', (Nucleotide.U, Nucleotide.U, Nucleotide.A | Nucleotide.G),
             (Nucleotide.C, Nucleotide.U, ALL_NUCLEOTIDES))
