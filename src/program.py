@@ -39,5 +39,5 @@ joined_exons = ''.join([exon.code for exon in spliced])
 joined_exons = joined_exons[joined_exons.find('AUG'):]
 
 poly_peptide_chain = list(reader.translate_string(joined_exons[:-(len(joined_exons)%3)]))
-pprint(poly_peptide_chain)
+print(poly_peptide_chain)
 print(''.join([blah.abbr for blah in poly_peptide_chain]))

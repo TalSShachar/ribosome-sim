@@ -1,5 +1,6 @@
 import re
 from pprint import pprint
+from types import NoneType
 # According to the consensus sequence MAG/GURAGU, where
 # M is A or C, and R is A or G
 FIVE_PRIME_SITE_REGEX = re.compile(r'([AC]AG(G?))(GU[AG]AGU|GUGAGC|GUGGGC)')
@@ -8,7 +9,8 @@ THREE_PRIME_END_MARKER = re.compile(r'[CU]AG')
 PYRIMIDINE_NUCLEOTIDES = ['C', 'U']
 KNOWN_POLYPYRIMIDINE_TRACTS = ['CUCUGCGCGGCACGUCCUGGC']
 
-POLYPYRIMIDINE_TRACT_SUSPECTION_LENGTH = 21
+POLYPYRIMIDINE_TRACT_SUSPECTION_LENGTH_MIN = 15
+POLYPYRIMIDINE_TRACT_SUSPECTION_LENGTH_MAX = 21
 POLYPYRIMIDINE_TRACT_SUSPECTION_THRESHOLD = .61
 MINIMUM_INTRON_SIZE = 70
 AVERAGE_INTRON_SIZE = 700
@@ -32,25 +34,37 @@ class Spliceosome:
         pass
 
     @staticmethod
-    def _is_polypyrimidine_tract(sequence: str) -> bool | float:
+    def _maybe_find_polypyrimidine_tract(sequence: str) -> NoneType | tuple[float, str]:
         if not sequence:
-            return False
+            return None
 
-        if len(sequence) < POLYPYRIMIDINE_TRACT_SUSPECTION_LENGTH:
-            return False
+        if len(sequence) < POLYPYRIMIDINE_TRACT_SUSPECTION_LENGTH_MIN:
+            return None
 
-        assert len(sequence) <= POLYPYRIMIDINE_TRACT_SUSPECTION_LENGTH
+        assert len(sequence) <= POLYPYRIMIDINE_TRACT_SUSPECTION_LENGTH_MAX
 
+        # print(sequence, len(sequence))
+
+        max_ratio = 0
+        max_sequence = ''
+        for size in range(POLYPYRIMIDINE_TRACT_SUSPECTION_LENGTH_MIN, POLYPYRIMIDINE_TRACT_SUSPECTION_LENGTH_MAX + 1):
+            cur_sequence = sequence[-size:]
+
+            ratio = Spliceosome.calculate_ratio(cur_sequence)
+            # print(f'{cur_sequence=} {len(cur_sequence)=} {ratio=}')
+            max_sequence, max_ratio = (cur_sequence, ratio) if ratio > max_ratio else (max_sequence, max_ratio)
+
+        return (ratio, max_sequence) if ratio >= POLYPYRIMIDINE_TRACT_SUSPECTION_THRESHOLD else None
+    
+    @staticmethod
+    def calculate_ratio(sequence: str):
         count = 0
         for c in sequence:
             count += int(c in PYRIMIDINE_NUCLEOTIDES)
 
-        ratio = count / len(sequence)
+        return count / len(sequence)
 
-        # print(f'suspected_polypyrimidine_tract={sequence}/{sequence.replace('U', 'T')} {{{len(sequence)}}} {ratio=}')
 
-        return ratio if ratio >= POLYPYRIMIDINE_TRACT_SUSPECTION_THRESHOLD else False
-    
     def splice(self, sequence: str) -> list[Exon]:
         if len(sequence) == 0:
             return []
@@ -112,11 +126,13 @@ class Spliceosome:
     def get_all_possible_polypyrimidine_tracts(intron_prefixed_sequence):
         for splice_end_site in THREE_PRIME_END_MARKER.finditer(intron_prefixed_sequence):
             suspected_polypyrimidine_tract = \
-                intron_prefixed_sequence[splice_end_site.span()[0] + 1 - POLYPYRIMIDINE_TRACT_SUSPECTION_LENGTH:]\
-                        [:POLYPYRIMIDINE_TRACT_SUSPECTION_LENGTH]
+                intron_prefixed_sequence[splice_end_site.span()[0] + 1 - POLYPYRIMIDINE_TRACT_SUSPECTION_LENGTH_MAX:]\
+                        [:POLYPYRIMIDINE_TRACT_SUSPECTION_LENGTH_MAX]
             
 
-            if not (ratio := Spliceosome._is_polypyrimidine_tract(suspected_polypyrimidine_tract)):
+            if not (tract := Spliceosome._maybe_find_polypyrimidine_tract(suspected_polypyrimidine_tract)):
                 continue
 
-            yield (ratio, splice_end_site, suspected_polypyrimidine_tract)
+            ratio, tract_sequence = tract
+
+            yield (ratio, splice_end_site, tract_sequence)
