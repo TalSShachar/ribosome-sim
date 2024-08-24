@@ -3,7 +3,7 @@ from pprint import pprint
 # According to the consensus sequence MAG/GURAGU, where
 # M is A or C, and R is A or G
 FIVE_PRIME_SITE_REGEX = re.compile(r'([AC]AG(G?))(GU[AG]AGU|GUGAGC|GUGGGC)')
-THREE_PRIME_END_MARKER = re.compile(r'CAG')
+THREE_PRIME_END_MARKER = re.compile(r'[CU]AG')
 
 PYRIMIDINE_NUCLEOTIDES = ['C', 'U']
 KNOWN_POLYPYRIMIDINE_TRACTS = ['CUCUGCGCGGCACGUCCUGGC']
@@ -11,7 +11,7 @@ KNOWN_POLYPYRIMIDINE_TRACTS = ['CUCUGCGCGGCACGUCCUGGC']
 POLYPYRIMIDINE_TRACT_SUSPECTION_LENGTH = 21
 POLYPYRIMIDINE_TRACT_SUSPECTION_THRESHOLD = .61
 MINIMUM_INTRON_SIZE = 70
-AVERAGE_INTRON_SIZE = 700 # 3000 bp
+AVERAGE_INTRON_SIZE = 700
 
 MAX_LENGTH_SCORE = 50
 MAX_RATIO_SCORE = 250
@@ -72,14 +72,12 @@ class Spliceosome:
         
         possible_tracts = Spliceosome.rank_and_sort_possible_tracts(list(possible_tracts))
 
-        # pprint(possible_tracts)
-
         most_probable_tract = possible_tracts[-1]
 
         next_exon_junction_index = most_probable_tract[1].span()[0] + 3
     
         return self.splice(intron_prefixed_sequence[next_exon_junction_index:])
-        
+
     @staticmethod
     def rank_and_sort_possible_tracts(possible_tracts):
         distance_to_average = lambda t: abs((AVERAGE_INTRON_SIZE - t[1].span()[0]))
@@ -95,7 +93,6 @@ class Spliceosome:
         
         get_length_score = lambda length: MAX_LENGTH_SCORE * (1 - (length  / length_range))
         get_ratio_score = lambda ratio: MAX_RATIO_SCORE * (ratio ** 4)
-
 
         filtered = list(filter(lambda t: t[1].span()[0] > MINIMUM_INTRON_SIZE, possible_tracts))
 

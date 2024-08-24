@@ -16,6 +16,25 @@ NUCLEOTIDE_TO_INDEX = {
     Nucleotide.U: 3,
 }
 
+# Exon: contain genetic coding nucleotides
+# Intron: don't contain any information about the genetic code
+
+# DNA(TGAC) -> precursor mRNA -> mRNA(UGAC) -> Polypeptide chain
+
+# CAGGUGAGU
+# MAG/GURAGU
+# M in [A, C]
+# R in [A, G]
+
+# Donor site - 5' splice site concensus sequence
+# Acceptor site - 3' splice site concensus sequence
+
+# Pyrimidine = [C, U]
+# PolyPyrimidine = A lot of pyrimidines
+#  [CU]AG
+
+# PolyPyrimidine tract
+
 class CodonReader:
     """
     Responsible for the ribosomes mRNA parsing logic. Receives a map of recognized codons and
@@ -59,16 +78,13 @@ class CodonReader:
                 (NUCLEOTIDE_TYPES * first) + second)
             ) + third
 
-    def translate(self, codon: str) -> CodonPattern | None:
+    def translate(self, codon: NucleotideTriplet) -> CodonPattern | None:
         """
         Translates a codon string to a CodonPattern variable 
         """
         assert len(codon) == CODON_SIZE
 
-        # Map each nucleotide char in the codon to it's enum value 
-        triplet = tuple([Nucleotide[n.name] for n in codon])
-
-        return self._map[self._calculate_index(triplet)]
+        return self._map[self._calculate_index(codon)]
     
     def translate_chain(self, chain: Iterator[NucleotideTriplet]) -> Iterator[CodonPattern]:
         """
@@ -100,11 +116,11 @@ class CodonReader:
         chunks = CodonReader._string_chunk(string.upper(), CODON_SIZE)
 
         # A generator pattern for producing Nucleotide triplets out of 3-char strings
-        chain: Iterable[NucleotideTriplet] = (
+        chain: Iterator[NucleotideTriplet] = (
             (Nucleotide[chunk[0]], Nucleotide[chunk[1]], Nucleotide[chunk[2]])
             for chunk in chunks
         )
-        
+
         return self.translate_chain(chain)
 
     @staticmethod
@@ -115,5 +131,5 @@ class CodonReader:
         """
         assert len(string) % length == 0, \
             f'Tried to chunk a string of length {len(string)} into {length} char chunks'
-        
+
         return (string[i:i + length] for i in range(0, len(string), length))

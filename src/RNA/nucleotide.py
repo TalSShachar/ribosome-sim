@@ -24,6 +24,7 @@ COMPLEMENT_NUCLEOTIDE = {
     Nucleotide.G: Nucleotide.C, 
 }
 
+
 # Takes in a Nucleotide value that can have differnt explicit matches (For example, [AU] in regex),
 # Takes the complements of all possible nucleotides,
 # and sums them up (Since all possible flags are flags and are distinct, summing is equivalent to a binary | operator)
