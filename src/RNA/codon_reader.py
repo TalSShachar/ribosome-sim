@@ -34,7 +34,7 @@ class CodonReader:
                 index = CodonReader._calculate_index(explicit_match)
 
                 assert self._map[index] is None, \
-                    f'Index {index} for triplet {explicit_match} is already taken by codec {self._map[index]._name}'
+                    f'Index {index} for triplet {explicit_match} is already taken by codec {self._map[index].name}'
 
                 self._map[index] = codon
 
@@ -84,7 +84,7 @@ class CodonReader:
                 raise ValueError(f'Invalid codon {codon=}')
 
             # Termination codon, break translation
-            if acid._name == STOP_CODON._name:
+            if acid.name == STOP_CODON.name:
                 yield acid
                 break
 

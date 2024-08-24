@@ -12,20 +12,21 @@ class CodonPattern:
     """
 
     _matches: set[NucleotideTriplet]
-    _name: str
+    name: str
 
-    def __init__(self, name: str, *matches: tuple[NucleotideTriplet]):
+    def __init__(self, abbr: str, name: str, *matches: tuple[NucleotideTriplet]):
         """Creates a codon pattern instances matching the matches given
 
         Args:
             name (str): The name of the codon match (An amino acid, a control command)
             *matches (list[NucleotideTriplet]): A variadic argument tuple for the match patterns of nucleotide triplets
         """
-        self._name = name
+        self.abbr = abbr
+        self.name = name
         self._matches = set(matches)
 
     def __str__(self) -> str:
-        return self._name
+        return self.name
     
     def __repr__(self) -> str:
         return str(self)
