@@ -13,6 +13,9 @@ POLYPYRIMIDINE_TRACT_SUSPECTION_THRESHOLD = .61
 MINIMUM_INTRON_SIZE = 70
 AVERAGE_INTRON_SIZE = 700 # 3000 bp
 
+MAX_LENGTH_SCORE = 50
+MAX_RATIO_SCORE = 250
+
 class Exon:
     code: str
 
@@ -44,7 +47,7 @@ class Spliceosome:
 
         ratio = count / len(sequence)
 
-        print(f'suspected_polypyrimidine_tract={sequence}/{sequence.replace('U', 'T')} {{{len(sequence)}}} {ratio=}')
+        # print(f'suspected_polypyrimidine_tract={sequence}/{sequence.replace('U', 'T')} {{{len(sequence)}}} {ratio=}')
 
         return ratio if ratio >= POLYPYRIMIDINE_TRACT_SUSPECTION_THRESHOLD else False
     
@@ -88,10 +91,10 @@ class Spliceosome:
             key=distance_to_average)[1].span()[0]
         
         length_range = abs(farthest_length_to_average_intron_size - closest_length_to_average_intron_size)
-        print(f'{closest_length_to_average_intron_size=} {farthest_length_to_average_intron_size=} {length_range=}')        
+        # print(f'{closest_length_to_average_intron_size=} {farthest_length_to_average_intron_size=} {length_range=}')        
         
-        get_length_score = lambda length: 50 * (1 - (length  / length_range))
-        get_ratio_score = lambda ratio: 250 * (ratio ** 4)
+        get_length_score = lambda length: MAX_LENGTH_SCORE * (1 - (length  / length_range))
+        get_ratio_score = lambda ratio: MAX_RATIO_SCORE * (ratio ** 4)
 
 
         filtered = list(filter(lambda t: t[1].span()[0] > MINIMUM_INTRON_SIZE, possible_tracts))
@@ -104,8 +107,8 @@ class Spliceosome:
             filtered,
             key=get_overall_score 
             )
-        for t in sorted_list:
-            print(t, 'score is', get_ratio_score(t[0]) + get_length_score(distance_to_average(t)))
+        # for t in sorted_list:
+        #     print(t, 'score is', get_ratio_score(t[0]) + get_length_score(distance_to_average(t)))
         return sorted_list
     
     @staticmethod
