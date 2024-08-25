@@ -1,6 +1,6 @@
 import re
 from typing import Iterable
-from RNA.nucleotide import NucleotideTriplet
+from .nucleotide import NucleotideTriplet
 
 ANTI_CODON_PATTERN = re.compile(r'^Anti\((.*)\)$')
 

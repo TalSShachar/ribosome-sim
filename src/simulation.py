@@ -1,17 +1,21 @@
 import pygame
-from src.models.ribosome import Ribosome
-from src.models.mrna import mRNA
-from src.models.trna import tRNA
-from src.visualizer import Visualizer
+from .models.ribosome import Ribosome
+from .models.mrna import mRNA
+from .models.trna import tRNA
+from .visualizer import Visualizer
+from .RNA.nucleotide import Nucleotide
 
+mRNA_SEQUENCE = "AUGUUAUUGUCUUCCUGAUGGUGA"
+ANTI_SEQUENCE = "UACAAUAACAGAAGGACUACCACU"
 
 class Simulation:
     def __init__(self, screen):
         self.screen = screen
-        self.ribosome = Ribosome((100, 100))
-        self.mrna = mRNA(sequence="AUGCGAUAA", position=(100, 300))
-        self.trna_list = [tRNA(anticodon="UAC", amino_acid="Methionine", position=(150, 50))]
+        self.mrna = mRNA(sequence=mRNA_SEQUENCE)
+        self.ribosome = Ribosome()
+        self.trna_list = [tRNA(anticodon=(Nucleotide.U,Nucleotide.A, Nucleotide.A), position=(150, 50))]
         self.visualizer = Visualizer(screen)
+        self.current_anticodon_index = 0
 
     def update(self):
         self.ribosome.update(self.mrna)
@@ -19,8 +23,8 @@ class Simulation:
             trna.update(self.ribosome)
 
     def draw(self):
-        self.visualizer.draw_ribosome(self.ribosome)
         self.visualizer.draw_mrna(self.mrna)
+        self.visualizer.draw_ribosome(self.ribosome)
         self.visualizer.draw_trna_list(self.trna_list)
 
     def run(self):
@@ -29,6 +33,11 @@ class Simulation:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
+                
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_DOWN:
+                        print("Down arrow key pressed!")
+                        self.current_anticodon_index += 3
             
             self.update()
             self.screen.fill('white')

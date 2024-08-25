@@ -1,7 +1,7 @@
 from typing import Iterable, Iterator
-from RNA.control_codons import STOP_CODON
-from RNA.codon_pattern import CodonPattern
-from RNA.nucleotide import Nucleotide, NucleotideTriplet, to_anti_codon
+from .control_codons import STOP_CODON
+from .codon_pattern import CodonPattern
+from .nucleotide import Nucleotide, NucleotideTriplet, to_anti_codon
 
 CODON_SIZE = 3
 NUCLEOTIDE_TYPES = 4
