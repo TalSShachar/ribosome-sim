@@ -1,9 +1,9 @@
 import pygame
-from src.utils.contants import RIBOSOM_POSITION
+from src.utils.contants import RIBOSOME_POSITION
 
 class Ribosome:
     def __init__(self):
-        self.position = RIBOSOM_POSITION
+        self.position = RIBOSOME_POSITION
         self.bound_trna = None  # Current tRNA bound to the ribosome
         self.synthesized_protein = []
 

@@ -5,14 +5,15 @@ from src.utils.contants import mRNA_POSITION
 class mRNA:
     def __init__(self, sequence: str):
         self.sequence = sequence
-        self.position = mRNA_POSITION 
 
-    def update(self):
-        # Logic to move the mRNA or manage its interaction with the ribosome
-        pass
+    def update(self, newSequence):
+        self.sequence = newSequence
 
     def draw(self, screen):
-        draw_polygon_with_upper_teeth(screen, 'gray', self.position[0], self.position[1], 500, 50, 20, 10)
+        position = mRNA_POSITION
+        x, y = position
+        draw_polygon_with_upper_teeth(screen, 'gray', x, y, 700, 20, 20, 20)
         
         font = pygame.font.Font(None, 24)
-        screen.blit((font.render(self.sequence, True, 'red')), self.position)
+        text = font.render("     ".join(list(self.sequence)), True, 'pink')
+        screen.blit(text, (x + 568 - (len(self.sequence)/4)*135, y - 10))
