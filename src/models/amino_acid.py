@@ -1,4 +1,6 @@
 import pygame
+from src.RNA.codon_pattern import CodonPattern
+from src.RNA.amino_acid_codons import ALL_ACIDS
 
 class AminoAcid:
     def __init__(self, name, color, position):
@@ -6,5 +8,5 @@ class AminoAcid:
         self.color = color
         self.position = position
 
-    def draw(self, surface):
-        pygame.draw.circle(surface, self.color, self.position, 10)
+    def draw(self, screen):
+        pygame.draw.circle(screen, self.color, self.position, 10)

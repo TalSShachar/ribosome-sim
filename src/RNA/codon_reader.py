@@ -1,7 +1,7 @@
 from typing import Iterable, Iterator
-from RNA.control_codons import STOP_CODON
-from RNA.codon_pattern import CodonPattern
-from RNA.nucleotide import Nucleotide, NucleotideTriplet
+from .control_codons import STOP_CODON
+from .codon_pattern import CodonPattern
+from .nucleotide import Nucleotide, NucleotideTriplet
 
 # Consants for calculating mapper array length
 CODON_SIZE = 3
@@ -120,7 +120,7 @@ class CodonReader:
             (Nucleotide[chunk[0]], Nucleotide[chunk[1]], Nucleotide[chunk[2]])
             for chunk in chunks
         )
-
+        
         return self.translate_chain(chain)
 
     @staticmethod
@@ -133,3 +133,20 @@ class CodonReader:
             f'Tried to chunk a string of length {len(string)} into {length} char chunks'
 
         return (string[i:i + length] for i in range(0, len(string), length))
+
+
+    @staticmethod
+    def translate_string_into_triplets(string: str):
+        """
+        Takes in an mRNA string, chunks it to 3-char chunks,
+        Parses them as nucleotide-char triplets and returns it
+        """
+        chunks = CodonReader._string_chunk(string.upper(), CODON_SIZE)
+
+        # A generator pattern for producing Nucleotide triplets out of 3-char strings
+        chain = [
+            (Nucleotide[chunk[0]], Nucleotide[chunk[1]], Nucleotide[chunk[2]])
+            for chunk in chunks
+        ]
+        
+        return chain

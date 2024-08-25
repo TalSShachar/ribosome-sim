@@ -1,19 +1,19 @@
+import pygame
 from src.utils.drawingUtil import draw_polygon_with_upper_teeth
+from src.utils.contants import mRNA_POSITION 
 
 class mRNA:
-    def __init__(self, sequence, position):
-        self.sequence = sequence  # List of codons (e.g., ['AUG', 'CGA', 'UAA'])
-        self.position = position
+    def __init__(self, sequence: str):
+        self.sequence = sequence
 
-    def update(self):
-        # Logic to move the mRNA or manage its interaction with the ribosome
-        pass
+    def update(self, newSequence):
+        self.sequence = newSequence
 
     def draw(self, screen):
-        draw_polygon_with_upper_teeth(screen, 'blue', self.position[0], self.position[1], 500, 130, 20, 10)
-
-        # # Draw mRNA as a series of codons
-        # for i, codon in enumerate(self.sequence):
-        #     codon_position = (self.position[0] + i * 30, self.position[1])
-        #     pygame.draw.rect(screen, (0, 0, 0), (*codon_position, 20, 20))
-        #     # Optionally draw the codon letters
+        position = mRNA_POSITION
+        x, y = position
+        draw_polygon_with_upper_teeth(screen, 'gray', x, y, 700, 20, 20, 20)
+        
+        font = pygame.font.Font(None, 24)
+        text = font.render("     ".join(list(self.sequence)), True, 'pink')
+        screen.blit(text, (x + 568 - (len(self.sequence)/4)*135, y - 10))
