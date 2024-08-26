@@ -15,5 +15,5 @@ class mRNA:
         draw_polygon_with_upper_teeth(screen, 'gray', x, y, 700, 20, 20, 20)
         
         font = pygame.font.Font(None, 24)
-        text = font.render("     ".join(list(self.sequence)), True, 'pink')
+        text = font.render("     ".join(list(self.sequence)), True, 'black')
         screen.blit(text, (x + 568 - (len(self.sequence)/4)*135, y - 10))
