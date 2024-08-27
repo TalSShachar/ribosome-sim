@@ -34,10 +34,7 @@ INS = (EXON_1 + INTRON_1 + EXON_2 + INTRON_2 + EXON_3) \
 
 spliced = list(s.splice(INS.replace('T', 'U')))
 
-joined_exons = ''.join([exon.code for exon in spliced])
+poly_peptide_chain = list(reader.translate_exons(spliced))
 
-joined_exons = joined_exons[joined_exons.find('AUG'):]
-
-poly_peptide_chain = list(reader.translate_string(joined_exons[:-(len(joined_exons)%3)]))
 print(poly_peptide_chain)
 print(''.join([blah.abbr for blah in poly_peptide_chain]))

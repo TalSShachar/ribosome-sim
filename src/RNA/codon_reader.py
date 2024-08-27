@@ -1,4 +1,6 @@
-from typing import Iterable, Iterator
+from typing import Callable, Iterable, Iterator
+
+from RNA.splicing.spliceosome import Exon
 from .control_codons import STOP_CODON
 from .codon_pattern import CodonPattern
 from .nucleotide import Nucleotide, NucleotideTriplet
@@ -15,6 +17,9 @@ NUCLEOTIDE_TO_INDEX = {
     Nucleotide.C: 2,
     Nucleotide.U: 3,
 }
+
+# A chemical, programatically artificial boundry
+NONSENSE_MEDIATED_DECAY_IDENTIFICATION_THRESHOLD = 54
 
 # Exon: contain genetic coding nucleotides
 # Intron: don't contain any information about the genetic code
@@ -122,6 +127,56 @@ class CodonReader:
         )
         
         return self.translate_chain(chain)
+
+    def translate_exons(self, exons: list[Exon]):
+        exon_indices = CodonReader.get_exon_indices(exons)
+
+        joined_exons = ''.join([exon.code for exon in exons])
+        first_methionine_index = joined_exons.find('AUG')
+        mrna_from_methionine = joined_exons[first_methionine_index:]
+        mrna_from_methionine = mrna_from_methionine[:-(len(mrna_from_methionine)%3)]
+
+        index = first_methionine_index
+        for acid in self.translate_string(mrna_from_methionine):
+            if acid == STOP_CODON:
+                distance = CodonReader.get_offset_within_current_middle_exon(index, exon_indices)
+                if distance is None or distance < NONSENSE_MEDIATED_DECAY_IDENTIFICATION_THRESHOLD:
+                    break
+
+                raise ValueError(f'Codon sequence appears in index {index}, which is not in the last exon. Decaying polypeptide chain!')
+
+            yield acid
+            index += 3
+
+    @staticmethod
+    def get_exon_indices(exons: list[Exon]) -> list[int]:
+        aggr_index = 0
+        exon_indices: list[int] = []
+        for exon in exons:
+            exon_indices.append(aggr_index)
+            aggr_index += len(exon.code)
+        return exon_indices
+    
+    def get_offset_within_current_middle_exon(index, exon_indices: list[int]) -> int | None:
+        last_index = CodonReader._get_last_index(exon_indices,
+                                                 lambda exon_index: exon_index <= index)
+        
+        assert last_index >= 0
+
+        # if Not a middle exon
+        if last_index == len(exon_indices) - 1:
+            return None
+        
+        return index - exon_indices[last_index]
+        
+    @staticmethod
+    def _get_last_index(elements: list[int], predicate):
+        last_index = -1
+        for i, elem in enumerate(elements):
+            if predicate(elem):
+                last_index = i
+
+        return last_index
 
     @staticmethod
     def _string_chunk(string, length) -> Iterable[str]:
