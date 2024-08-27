@@ -1,7 +1,7 @@
 from pprint import pprint
 from RNA.codon_reader import CodonReader
 from RNA.amino_acid_codons import ALL_ACIDS
-from spliceosome import Spliceosome
+from RNA.splicing.spliceosome import Spliceosome
 
 reader = CodonReader(ALL_ACIDS)
 
