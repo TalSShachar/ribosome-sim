@@ -1,6 +1,6 @@
-from RNA.codon_pattern import CodonPattern
-from RNA.nucleotide import Nucleotide, ALL as ALL_NUCLEOTIDES
-from RNA.control_codons import *
+from .codon_pattern import CodonPattern
+from .nucleotide import Nucleotide, ALL as ALL_NUCLEOTIDES
+from .control_codons import *
 
 # A BUNCH of constants.
 

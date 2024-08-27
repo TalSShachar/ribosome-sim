@@ -11,4 +11,5 @@ def main():
     simulation.run()
 
 if __name__ == "__main__":
+    print(__package__)
     main()
