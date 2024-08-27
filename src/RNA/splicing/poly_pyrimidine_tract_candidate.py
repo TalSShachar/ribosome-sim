@@ -10,6 +10,17 @@ class PolyPyrimidineTractCandidate:
     ratio: float
 
     def __init__(self, three_prime_ss_candidate):
+        """Tries to initialize a Poly Pyrimidine Tract Candidate from a given substring, if it
+        matches the minimum size requirements.
+
+        Args:
+            three_prime_ss (str): The entire three prime splice sequence, up to the third to last character.
+
+        Returns:
+            pptc.PolyPyrimidineTractCandidate: A candidate for the poly pyrimidine tract with the best
+            Pyrimidine-ratio out of the possible sizes attempted
+        """
+        
         self.three_prime_ss_candidate = three_prime_ss_candidate
 
         max_ratio = .0
