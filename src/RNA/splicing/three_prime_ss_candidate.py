@@ -11,6 +11,7 @@ MAX_LENGTH_SCORE = 1.0
 BPS_FOUND_BONUS = 1.0
 
 AVERAGE_INTRON_SIZE = 700
+MIN_INTRON_SIZE = 50
 
 THREE_PRIME_END_MARKER = re.compile(r'[UC]AG')
 
@@ -79,7 +80,7 @@ class ThreePrimeSpliceSequenceCandidate:
         return 1 - ((1 - ratio) ** 3)
 
     def is_valid(self):
-        return self.tract and self.tract.is_valid() and self.resulting_intron_size > 0
+        return self.tract and self.tract.is_valid() and self.resulting_intron_size > MIN_INTRON_SIZE
 
     def score(self, intron_length_range: int):
         score = (self.get_bps_score()
