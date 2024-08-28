@@ -1,5 +1,7 @@
 import pygame
 
+from utils.string_util import chunk_string
+
 from .visualizer import Visualizer
 from .RNA.amino_acid_codons import ALL_ACIDS
 from .RNA.codon_reader import CodonReader
@@ -26,7 +28,7 @@ class Simulation:
         self.trna_list = [  tRNA(anticodon=triplet)
                             for index, triplet in enumerate(self.trna_triplets) ]
         self.trna_list = [None, None, None] + self.trna_list
-        self.mrna_triplets = ['', '', ''] + list(self.codon_reader._string_chunk(mRNA_SEQUENCE, 3))
+        self.mrna_triplets = ['', '', ''] + list(chunk_string(mRNA_SEQUENCE, 3))
         self.current_triplet_index = 0
 
         self.mrna = mRNA(sequence="")

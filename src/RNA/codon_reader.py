@@ -1,6 +1,7 @@
 from typing import Callable, Iterable, Iterator
 
 from RNA.splicing.spliceosome import Exon
+from utils.string_util import chunk_string
 from .control_codons import STOP_CODON
 from .codon_pattern import CodonPattern
 from .nucleotide import Nucleotide, NucleotideTriplet
@@ -118,7 +119,7 @@ class CodonReader:
         Parses them as nucleotide-char triplets, and translates those triplets
         as a codon chain
         """
-        chunks = CodonReader._string_chunk(string.upper(), CODON_SIZE)
+        chunks = chunk_string(string.upper(), CODON_SIZE)
 
         # A generator pattern for producing Nucleotide triplets out of 3-char strings
         chain: Iterator[NucleotideTriplet] = (
@@ -178,17 +179,6 @@ class CodonReader:
 
         return last_index
 
-    @staticmethod
-    def _string_chunk(string, length) -> Iterable[str]:
-        """
-        A utility method, takes in a string and the length of the desired chunks,
-        And generates chunks of that length
-        """
-        assert len(string) % length == 0, \
-            f'Tried to chunk a string of length {len(string)} into {length} char chunks'
-
-        return (string[i:i + length] for i in range(0, len(string), length))
-
 
     @staticmethod
     def translate_string_into_triplets(string: str):
@@ -196,7 +186,7 @@ class CodonReader:
         Takes in an mRNA string, chunks it to 3-char chunks,
         Parses them as nucleotide-char triplets and returns it
         """
-        chunks = CodonReader._string_chunk(string.upper(), CODON_SIZE)
+        chunks = chunk_string(string.upper(), CODON_SIZE)
 
         # A generator pattern for producing Nucleotide triplets out of 3-char strings
         chain = [
