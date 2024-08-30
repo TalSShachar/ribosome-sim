@@ -1,10 +1,7 @@
 import pygame
-from src.RNA.nucleotide import NucleotideTriplet, to_complementing_codon
-from src.RNA.codon_pattern import CodonPattern
-from src.utils.drawingUtil import draw_polygon_with_bottom_teeth
-from src.RNA.codon_reader import CodonReader
-from src.RNA.amino_acid_codons import ALL_ACIDS
-from src.utils.contants import *
+from RNA.nucleotide import COMPLEMENT_NUCLEOTIDE_STRING
+from utils.drawingUtil import draw_polygon_with_bottom_teeth
+from utils.contants import *
 from enum import Enum
 
 class DrawingType(Enum):
@@ -12,27 +9,34 @@ class DrawingType(Enum):
     FIRST = 1
     SECOND = 2
     INCOMING = 3
-tRNA_DRAWING_TYPES_MATCHER = {DrawingType.OUTGOING: tRNA_OUTGOING, DrawingType.FIRST: FIRST_tRNA_IN_RIBOSOME, DrawingType.SECOND: SECOND_tRNA_IN_RIBOSOME, DrawingType.INCOMING: tRNA_INCOMING}
-
-
-def triplet_to_string(triplet: NucleotideTriplet) -> str:
-    return "    ".join(nucleotide.name for nucleotide in triplet)
-
+tRNA_DRAWING_TYPES_MATCHER = {
+    DrawingType.OUTGOING: tRNA_OUTGOING,
+    DrawingType.FIRST: FIRST_tRNA_IN_RIBOSOME,
+    DrawingType.SECOND: SECOND_tRNA_IN_RIBOSOME,
+    DrawingType.INCOMING: tRNA_INCOMING
+}
 
 class tRNA:
-    def __init__(self, anticodon: NucleotideTriplet):
-        self.anticodon = anticodon
-        self.amino_acid = self.producedAminoAcid()
-        self.bound = False  # Whether it is bound to the ribosome
-    
-    def producedAminoAcid(self) -> CodonPattern | None:
-        reader = CodonReader(ALL_ACIDS)
-        return reader.translate(self.anticodon)
+    amino_acid_name: str
+    actual_match: str
+    bound: bool
+
+    def __init__(self, amino_acid_name: str, actual_match: str):
+        self.amino_acid_name = amino_acid_name
+        self.actual_match = tRNA._translate_match_to_complement(actual_match)
+        self.bound = False  # Whether it is bound to the ribosome element on screen
 
     def update(self, ribosome):
         # Logic for tRNA movement towards the ribosome and binding
         pass
 
+    @staticmethod
+    def _translate_match_to_complement(match: str):
+        return ''.join(COMPLEMENT_NUCLEOTIDE_STRING[c] for c in match)
+
+    @staticmethod
+    def _space_characters(string: str, space: int):
+        return (space * ' ').join(string)
 
     def draw(self, screen, type: DrawingType):
         position = tRNA_DRAWING_TYPES_MATCHER[type]
@@ -43,7 +47,7 @@ class tRNA:
         # Add text to polynom
         font = pygame.font.Font(None, 24)
         screen.blit(font.render('tRNA', True, 'black'),  (x + 10, y + 15))
-        screen.blit((font.render(triplet_to_string(self.anticodon), True, 'red')), (x + 8, y + 90))
+        screen.blit((font.render(tRNA._space_characters(self.actual_match, 4), True, 'red')), (x + 8, y + 90))
 
         # Add text to polynom
-        screen.blit((font.render(self.amino_acid.name, True, 'red')), (x+40,y-25))
+        screen.blit((font.render(self.amino_acid_name[:3], True, 'red')), (x+27,y-30))

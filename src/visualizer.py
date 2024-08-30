@@ -1,8 +1,8 @@
 import pygame
 
-from src.models.mrna import mRNA
-from src.models.trna import DrawingType
-from src.utils.drawingUtil import *
+from models.mrna import mRNA
+from models.trna import DrawingType
+from utils.drawingUtil import *
 
 class Visualizer:
     def __init__(self, screen):

@@ -1,5 +1,5 @@
 import pygame
-from src.utils.contants import RIBOSOME_POSITION
+from utils.contants import RIBOSOME_POSITION
 
 class Ribosome:
     def __init__(self):

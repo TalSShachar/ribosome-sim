@@ -6,4 +6,4 @@ STOP_CODON = CodonPattern('*', 'Stop Transcription', (Nucleotide.U, Nucleotide.A
                    (Nucleotide.U, Nucleotide.G, Nucleotide.A))
 
 # AUG - A codon signaling the beginning of construction of polypeptide strand
-BEGIN_CODON = CodonPattern('M', 'Begin Transcription', (Nucleotide.A, Nucleotide.U, Nucleotide.G))
+BEGIN_CODON = CodonPattern('M', 'Methionine', (Nucleotide.A, Nucleotide.U, Nucleotide.G))

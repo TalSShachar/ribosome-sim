@@ -3,7 +3,7 @@ from typing import Iterable
 import RNA.splicing.poly_pyrimidine_tract_candidate as pptc
 
 INSPECTION_SIZE = 42
-BPS_PATTERN = re.compile(r'[CU][AUGC][CU]U[AG]A[CU]')
+BPS_PATTERN = re.compile(r'[CU][AUGC][CU]U[AG]A[CU]') # YNYURAY
 
 # Score Constants
 MAX_RATIO_SCORE = 8.0

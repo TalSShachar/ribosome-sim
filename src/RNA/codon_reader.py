@@ -41,6 +41,22 @@ NONSENSE_MEDIATED_DECAY_IDENTIFICATION_THRESHOLD = 54
 
 # PolyPyrimidine tract
 
+class CodonPatternMatch:
+    match: NucleotideTriplet
+    pattern: CodonPattern
+
+    def __init__(self, match: NucleotideTriplet, pattern: CodonPattern):
+        self.match = match
+        self.pattern = pattern
+
+    def get_match_string(self) -> str:
+        return ''.join(n.name for n in self.match)
+
+    def __str__(self):
+        return f"{self.pattern.name}({self.get_match_string()})"
+    def __repr__(self):
+        return str(self)
+
 class CodonReader:
     """
     Responsible for the ribosomes mRNA parsing logic. Receives a map of recognized codons and
@@ -84,36 +100,37 @@ class CodonReader:
                 (NUCLEOTIDE_TYPES * first) + second)
             ) + third
 
-    def translate(self, codon: NucleotideTriplet) -> CodonPattern | None:
+    def _translate(self, codon: NucleotideTriplet) -> CodonPatternMatch | None:
         """
         Translates a codon string to a CodonPattern variable 
         """
         assert len(codon) == CODON_SIZE
 
-        return self._map[self._calculate_index(codon)]
+        matching_codon_pattern = self._map[self._calculate_index(codon)]
+        return CodonPatternMatch(codon, matching_codon_pattern) if matching_codon_pattern else None
     
-    def translate_chain(self, chain: Iterator[NucleotideTriplet]) -> Iterator[CodonPattern]:
+    def _translate_chain(self, chain: Iterator[NucleotideTriplet]) -> Iterator[CodonPatternMatch]:
         """
         Takes in an Iterator of Nucleotide Triplets and,
         as a generator, outputs concrete codon patterns with the matching
         Amino acid name 
         """
         for codon in chain:
-            acid = self.translate(codon)
+            acid = self._translate(codon)
 
             # If translating the codon failed
             if not acid:
                 raise ValueError(f'Invalid codon {codon=}')
 
             # Termination codon, break translation
-            if acid.name == STOP_CODON.name:
+            if acid.pattern.name == STOP_CODON.name:
                 yield acid
                 break
 
             yield acid
 
 
-    def translate_string(self, string: str):
+    def translate_string(self, string: str) -> Iterator[CodonPatternMatch]:
         """
         Takes in an mRNA string, chunks it to 3-char chunks,
         Parses them as nucleotide-char triplets, and translates those triplets
@@ -127,10 +144,10 @@ class CodonReader:
             for chunk in chunks
         )
         
-        return self.translate_chain(chain)
+        return self._translate_chain(chain)
 
-    def translate_exons(self, exons: list[Exon]):
-        exon_indices = CodonReader.get_exon_indices(exons)
+    def translate_exons(self, exons: list[Exon]) -> Iterator[CodonPatternMatch]:
+        exon_indices = CodonReader._get_exon_indices(exons)
 
         joined_exons = ''.join([exon.code for exon in exons])
         first_methionine_index = joined_exons.find('AUG')
@@ -139,8 +156,8 @@ class CodonReader:
 
         index = first_methionine_index
         for acid in self.translate_string(mrna_from_methionine):
-            if acid == STOP_CODON:
-                distance = CodonReader.get_offset_within_current_middle_exon(index, exon_indices)
+            if acid.pattern == STOP_CODON:
+                distance = CodonReader._get_offset_within_current_middle_exon(index, exon_indices)
                 if distance is None or distance < NONSENSE_MEDIATED_DECAY_IDENTIFICATION_THRESHOLD:
                     break
 
@@ -150,7 +167,7 @@ class CodonReader:
             index += 3
 
     @staticmethod
-    def get_exon_indices(exons: list[Exon]) -> list[int]:
+    def _get_exon_indices(exons: list[Exon]) -> list[int]:
         aggr_index = 0
         exon_indices: list[int] = []
         for exon in exons:
@@ -158,7 +175,8 @@ class CodonReader:
             aggr_index += len(exon.code)
         return exon_indices
     
-    def get_offset_within_current_middle_exon(index, exon_indices: list[int]) -> int | None:
+    @staticmethod
+    def _get_offset_within_current_middle_exon(index, exon_indices: list[int]) -> int | None:
         last_index = CodonReader._get_last_index(exon_indices,
                                                  lambda exon_index: exon_index <= index)
         
@@ -178,20 +196,3 @@ class CodonReader:
                 last_index = i
 
         return last_index
-
-
-    @staticmethod
-    def translate_string_into_triplets(string: str):
-        """
-        Takes in an mRNA string, chunks it to 3-char chunks,
-        Parses them as nucleotide-char triplets and returns it
-        """
-        chunks = chunk_string(string.upper(), CODON_SIZE)
-
-        # A generator pattern for producing Nucleotide triplets out of 3-char strings
-        chain = [
-            (Nucleotide[chunk[0]], Nucleotide[chunk[1]], Nucleotide[chunk[2]])
-            for chunk in chunks
-        ]
-        
-        return chain

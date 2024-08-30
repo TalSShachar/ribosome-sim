@@ -23,6 +23,13 @@ COMPLEMENT_NUCLEOTIDE = {
     Nucleotide.C: Nucleotide.G, 
     Nucleotide.G: Nucleotide.C, 
 }
+# The complementing Nucleotide when looking at tRNA<->mRNA, as characters
+COMPLEMENT_NUCLEOTIDE_STRING = {
+    'A': 'U', 
+    'U': 'A', 
+    'C': 'G', 
+    'G': 'C', 
+}
 
 
 # Takes in a Nucleotide value that can have differnt explicit matches (For example, [AU] in regex),

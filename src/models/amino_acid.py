@@ -1,6 +1,6 @@
 import pygame
-from src.RNA.codon_pattern import CodonPattern
-from src.RNA.amino_acid_codons import ALL_ACIDS
+from RNA.codon_pattern import CodonPattern
+from RNA.amino_acid_codons import ALL_ACIDS
 
 class AminoAcid:
     def __init__(self, name, color, position):
