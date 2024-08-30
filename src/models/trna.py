@@ -19,11 +19,13 @@ tRNA_DRAWING_TYPES_MATCHER = {
 class tRNA:
     amino_acid_name: str
     actual_match: str
+    complement_to_match: str
     bound: bool
 
     def __init__(self, amino_acid_name: str, actual_match: str):
         self.amino_acid_name = amino_acid_name
-        self.actual_match = tRNA._translate_match_to_complement(actual_match)
+        self.actual_match = actual_match
+        self.complement_to_match = tRNA._translate_match_to_complement(actual_match)
         self.bound = False  # Whether it is bound to the ribosome element on screen
 
     def update(self, ribosome):
@@ -47,7 +49,7 @@ class tRNA:
         # Add text to polynom
         font = pygame.font.Font(None, 24)
         screen.blit(font.render('tRNA', True, 'black'),  (x + 10, y + 15))
-        screen.blit((font.render(tRNA._space_characters(self.actual_match, 4), True, 'red')), (x + 8, y + 90))
+        screen.blit((font.render(tRNA._space_characters(self.complement_to_match, 4), True, 'red')), (x + 8, y + 90))
 
         # Add text to polynom
         screen.blit((font.render(self.amino_acid_name[:3], True, 'red')), (x+27,y-30))
