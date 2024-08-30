@@ -31,12 +31,7 @@ class Simulation:
         
         exons = Spliceosome().splice(dna_sequence)
         self.codon_reader = CodonReader(ALL_ACIDS)
-        
-        # This might throw an exception - Think about how to handle it without exiting early,
-        # For example, read until the point of failure and only then crash (Since we are translating it
-        # Directly into a list, all of the enumeration will happen at once, despite the fact that the 
-        # Translate introns method is a generator, and this iterating over it in a foreach manner will throw ONLY when
-        # The Nonsense mediated decay is employed)
+
         self.polypeptide_chain, self.error_at_end = Simulation._parse_until_failure(self.codon_reader, exons)
 
         # assert len(list(self.trna_triplets)) == len(list(acids_chain))
