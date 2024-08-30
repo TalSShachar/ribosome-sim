@@ -51,7 +51,6 @@ class Simulation:
 
         self.mrna_string = ''.join(match.actual_match if match else '   ' for match in self.trna_list)
         
-        print(self.mrna_string)
         self.mrna = mRNA(sequence='')
         self.ribosome = Ribosome()
 
