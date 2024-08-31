@@ -136,4 +136,6 @@ The `Visualizer` class, which acts as a general-purpose drawing utility, handles
 
 Through this Pygame-based visualization, users can observe the dynamic interactions between tRNA, mRNA, and the ribosome, gaining a deeper understanding of the translation process in an interactive and engaging way.
 
-
+![alt text](image-1.png)
+![alt text](image.png)
+![alt text](image-2.png)
