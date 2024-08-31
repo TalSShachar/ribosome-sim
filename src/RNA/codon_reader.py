@@ -165,6 +165,8 @@ class CodonReader:
 
             yield acid
             index += 3
+        else: # Only happens in the case that the for loop ended without a break statement
+            raise ValueError('Codon sequence ended without any stop codon. Employing Non-stop Mediated Decay of the created polypeptide chain.')
 
     @staticmethod
     def _get_exon_indices(exons: list[Exon]) -> list[int]:
