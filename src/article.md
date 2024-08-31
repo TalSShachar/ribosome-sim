@@ -119,3 +119,21 @@ In the end, we sort the resulting intron ends by the score we have given them, a
 At the end of this process we have a chain of Exons, that are fed to the CodonReader. Each node of this chain indicates an EJC, and that way the nonsense mediated decay can be carried out by the ribosome.
 
 > It is important to note that we developed this approach, and that given exotic inputs our code would likely fail. We have examples where our code properly identifies such splice sequences, but in real life genetic databases the coding sequences, along with the actual exon and intron boundaries are long available, and given those database, much more dependable and accurate machine learning models have been developed. For example, one paper we looked at used Markov Chains along with 10 different splice ehancer identifications to accurately identify splice sites. This model was built atop thousands of genetic sequences, and we cannot expect to compete with such methods.
+
+### 3.2 View: Visualization with Pygame
+The visualization component of our project was implemented using Pygame, a Python library designed for writing video games but versatile enough for general graphical applications. This component is responsible for visually representing the complex processes of mRNA translation, tRNA interaction, and ribosome function.
+
+We structured the visualization into several key classes, each corresponding to the biological entities they represent:
+
+1. **mRNA**: Displays the sequence of nucleotides, along with the codons that are read by the ribosome.
+2. **tRNA**: Represents the tRNA molecules, each carrying specific amino acids, and visually aligning with the mRNA to deliver the correct amino acid.
+3. **Ribosome**: Simulates the movement along the mRNA strand, reading codons, and facilitating the assembly of the poly-peptide chain.
+4. **Amino Acid**: Visually depicts the growing poly-peptide chain as amino acids are added.
+
+The `Simulation` class manages the overall logic, ensuring that the visualization updates correctly as the simulation progresses. This includes handling the movement of tRNA molecules, the ribosome's progression along the mRNA strand, and the assembly of the poly-peptide chain.
+
+The `Visualizer` class, which acts as a general-purpose drawing utility, handles the rendering of these components on the screen. It abstracts away the complexity of Pygame, allowing the simulation logic to focus on the biological processes rather than the intricacies of graphical rendering.
+
+Through this Pygame-based visualization, users can observe the dynamic interactions between tRNA, mRNA, and the ribosome, gaining a deeper understanding of the translation process in an interactive and engaging way.
+
+
